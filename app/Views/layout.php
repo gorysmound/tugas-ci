@@ -101,7 +101,7 @@ if (uri_string() != "") {
 
     <!-- Template Main JS File -->
     <script src="<?php echo base_url() ?>NiceAdmin/assets/js/main.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.js "></script>
 </body>
 
 </html>
