@@ -2,19 +2,24 @@
 
 namespace App\Controllers;
 
+use App\Models\TransactionModel;
+use App\Models\TransactionDetailModel;
+
 class TransaksiController extends BaseController
 {
     protected $cart;
     protected $url = "https://api.rajaongkir.com/starter/";
-    protected $api = "2099dfca069408eb5d7e4be03cb8fde8";
+    protected $apiKey = "b80ea8b7a7cf2f01b60adfe15ccbaa3f";
     protected $transaction;
     protected $transaction_detail;
-   
+
     function __construct()
     {
         helper('number');
         helper('form');
         $this->cart = \Config\Services::cart();
+        $this->transaction = new TransactionModel();
+        $this->transaction_detail = new TransactionDetailModel();
     }
 
     public function index()
@@ -26,13 +31,15 @@ class TransaksiController extends BaseController
 
     public function cart_add()
     {
-        $this->cart->insert(array(
-            'id'        => $this->request->getPost('id'),
-            'qty'       => 1,
-            'price'     => $this->request->getPost('harga'),
-            'name'      => $this->request->getPost('nama'),
-            'options'   => array('foto' => $this->request->getPost('foto'))
-        ));
+        $this->cart->insert(
+            array(
+                'id' => $this->request->getPost('id'),
+                'qty' => 1,
+                'price' => $this->request->getPost('harga'),
+                'name' => $this->request->getPost('nama'),
+                'options' => array('foto' => $this->request->getPost('foto'))
+            )
+        );
         session()->setflashdata('success', 'Produk berhasil ditambahkan ke keranjang. (<a href="' . base_url() . 'keranjang">Lihat</a>)');
         return redirect()->to(base_url('/'));
     }
@@ -48,10 +55,12 @@ class TransaksiController extends BaseController
     {
         $i = 1;
         foreach ($this->cart->contents() as $value) {
-            $this->cart->update(array(
-                'rowid' => $value['rowid'],
-                'qty'   => $this->request->getPost('qty' . $i++)
-            ));
+            $this->cart->update(
+                array(
+                    'rowid' => $value['rowid'],
+                    'qty' => $this->request->getPost('qty' . $i++)
+                )
+            );
         }
 
         session()->setflashdata('success', 'Keranjang Berhasil Diedit');
@@ -70,7 +79,7 @@ class TransaksiController extends BaseController
         $data['items'] = $this->cart->contents();
         $data['total'] = $this->cart->total();
         $provinsi = $this->rajaongkir('province');
-				$data['provinsi'] = json_decode($provinsi)->rajaongkir->results;
+        $data['provinsi'] = json_decode($provinsi)->rajaongkir->results;
 
         return view('v_checkout', $data);
     }
@@ -113,7 +122,8 @@ class TransaksiController extends BaseController
                 "content-type: application/x-www-form-urlencoded",
                 "key: " . $this->apiKey,
             ),
-        ));
+        )
+        );
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
@@ -145,7 +155,8 @@ class TransaksiController extends BaseController
             CURLOPT_HTTPHEADER => array(
                 "key: " . $this->apiKey
             ),
-        ));
+        )
+        );
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
@@ -157,7 +168,7 @@ class TransaksiController extends BaseController
 
     public function buy()
     {
-        if ($this->request->getPost()) { 
+        if ($this->request->getPost()) {
             $dataForm = [
                 'username' => $this->request->getPost('username'),
                 'total_harga' => $this->request->getPost('total_harga'),
@@ -167,11 +178,11 @@ class TransaksiController extends BaseController
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => date("Y-m-d H:i:s")
             ];
-    
+
             $this->transaction->insert($dataForm);
-    
+
             $last_insert_id = $this->transaction->getInsertID();
-    
+
             foreach ($this->cart->contents() as $value) {
                 $dataFormDetail = [
                     'transaction_id' => $last_insert_id,
@@ -182,12 +193,12 @@ class TransaksiController extends BaseController
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s")
                 ];
-    
+
                 $this->transaction_detail->insert($dataFormDetail);
             }
-    
+
             $this->cart->destroy();
-     
+
             return redirect()->to(base_url('profile'));
         }
     }

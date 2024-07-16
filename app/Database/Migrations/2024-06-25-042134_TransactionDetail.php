@@ -56,4 +56,4 @@ class TransactionDetail extends Migration
     {
         $this->forge->dropTable('transaction_detail');
     }
-}
+}  

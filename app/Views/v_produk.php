@@ -35,7 +35,7 @@ if (session()->getFlashData('failed')) {
             <th scope="col">Harga</th>
             <th scope="col">Jumlah</th>
             <th scope="col">Foto</th>
-            <th scope="col"></th>
+            <th scope="col">Aksi</th>
         </tr>
     </thead>
     <tbody>
@@ -52,11 +52,11 @@ if (session()->getFlashData('failed')) {
                 </td>
                 <td>
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal-<?= $produk['id'] ?>">
-                    Ubah
-                </button>
-                <a href="<?= base_url('produk/delete/' . $produk['id']) ?>" class="btn btn-danger" onclick="return confirm('Yakin hapus data ini ?')">
-                 Hapus
-                </a>
+    Ubah
+</button>
+<a href="<?= base_url('produk/delete/' . $produk['id']) ?>" class="btn btn-danger" onclick="return confirm('Yakin hapus data ini ?')">
+    Hapus
+</a>
                 </td>
             </tr>
             <!-- Edit Modal Begin -->
